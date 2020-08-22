@@ -27,6 +27,19 @@ client = TiingoClient(config)
 Today = pd.datetime.today().strftime("%Y/%m/%d") 
 tickerList = ['TSLA', 'QQQ']
 
+
+ticker_history = client.get_dataframe(tickerList,
+                                      frequency='weekly',
+                                      metric_name='adjClose',
+                                      startDate='2019-10-01',
+                                      endDate=Today)
+
+
+ticker_history['index2'] = ticker_history.index
+ticker_history['date'] = ticker_history['index2'].dt.strftime('%Y-%m-%d')
+stockData = ticker_history.to_json(orient='records', date_format='none')
+
+
 @app.route('/')
 def index():
   return "<h1>Welcome changes 1</h1>"
@@ -34,5 +47,10 @@ def index():
 @app.route('/test')
 def test2():
   return "<h1>test2</h1>"
+
+
+@app.route('/stocks') 
+def get_stores():
+    return stockData
 
 
