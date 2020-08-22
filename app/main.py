@@ -57,7 +57,7 @@ def test2():
   return "<h1>test2</h1>"
 
 
-@app.route('/stocks/test2.json') 
+@app.route('/stocks') 
 def get_stores():
     return jsonify(tempList)
 
