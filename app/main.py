@@ -25,19 +25,27 @@ client = TiingoClient(config)
 
 
 Today = pd.datetime.today().strftime("%Y/%m/%d") 
-tickerList = ['TSLA', 'QQQ']
+tickerList2 = ['QQQ', 'SPY', 'DIA', 'FXI']
 
-
-ticker_history = client.get_dataframe(tickerList,
+ticker_history2 = client.get_dataframe(tickerList2,
                                       frequency='weekly',
                                       metric_name='adjClose',
-                                      startDate='2019-10-01',
+                                      startDate='2019-11-1',
                                       endDate=Today)
 
+testDataframe = ticker_history2.pct_change().dropna()
+TempDF = testDataframe
+TempDF['index2'] = testDataframe.index
+testDataframe['DateColumn'] = TempDF['index2'].dt.strftime('%m-%d-%Y')
+testDataframe = testDataframe.drop(['index2'], axis=1)
 
-ticker_history['index2'] = ticker_history.index
-ticker_history['date'] = ticker_history['index2'].dt.strftime('%Y-%m-%d')
-stockData = ticker_history.to_json(orient='records', date_format='none')
+#stockDict.items()
+stockDict = testDataframe.to_dict('records')
+#columnNames = ['TSLA', 'INTC'] - this is already tickerlist2 above for dataframe API pull
+tempList = []
+for name in tickerList2:
+    for p in stockDict:
+        tempList.append({"Value" : (p[name]), "Date": p['DateColumn'], "Ticker":name})
 
 
 @app.route('/')
@@ -49,8 +57,7 @@ def test2():
   return "<h1>test2</h1>"
 
 
-@app.route('/stocks') 
+@app.route('/stocks/test2.json') 
 def get_stores():
-    return stockData
-
+    return jsonify(tempList)
 
